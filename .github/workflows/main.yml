@@ -76,7 +76,7 @@ jobs:
           echo Version: $VERSION
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
-          dotnet build --configuration Release --no-restore /p:Version=$VERSION
+          dotnet build --configuration Release /p:Version=$VERSION
       - name: Push to GitHub Feed
         run: |
           for f in ./src/${PROJECT_NAME}/bin/Release/*.nupkg
