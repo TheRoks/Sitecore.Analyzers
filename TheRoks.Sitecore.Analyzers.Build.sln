@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3AA1950D-28C1-4813-AAEF-26F4988AF9EC}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.config = NuGet.config
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheRoks.Sitecore.Analyzers", "src\TheRoks.Sitecore.Analyzers\TheRoks.Sitecore.Analyzers.csproj", "{5B9FB296-FDEC-4A4F-9EC1-6BA81DACBCFA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheRoks.Sitecore.Analyzers.Package", "src\TheRoks.Sitecore.Analyzers.Package\TheRoks.Sitecore.Analyzers.Package.csproj", "{551E9DF8-BA2B-447D-A8F7-0CB46ABEB025}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B9FB296-FDEC-4A4F-9EC1-6BA81DACBCFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B9FB296-FDEC-4A4F-9EC1-6BA81DACBCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B9FB296-FDEC-4A4F-9EC1-6BA81DACBCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B9FB296-FDEC-4A4F-9EC1-6BA81DACBCFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{551E9DF8-BA2B-447D-A8F7-0CB46ABEB025}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{551E9DF8-BA2B-447D-A8F7-0CB46ABEB025}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{551E9DF8-BA2B-447D-A8F7-0CB46ABEB025}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{551E9DF8-BA2B-447D-A8F7-0CB46ABEB025}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12522A34-FCEE-4C32-B0E7-DAF7B3042D8A}
+	EndGlobalSection
+EndGlobal
