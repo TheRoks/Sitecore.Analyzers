@@ -58,4 +58,4 @@ jobs:
           done
     - name: Push to NuGet
       if: github.ref == 'refs/heads/main'
-      run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push nuget-packages/*.nupkg --api-key ${NUGET_KEY} --source ${NUGET_FEED}
