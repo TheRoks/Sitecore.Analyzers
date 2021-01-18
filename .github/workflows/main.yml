@@ -70,13 +70,16 @@ jobs:
         with:
           dotnet-version: 3.1.301
       - name: Create Release NuGet package
+        id: set_version
         run: |
           arrTag=(${GITHUB_REF//\// })
           VERSION="${arrTag[2]}"
           echo Version: $VERSION
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
-          dotnet build --configuration Release --no-restore /p:Version=$VERSION
+          echo ::set-output name=version::${VERSION}
+      - name: Build
+        run: dotnet build --configuration Release /p:Version=${{ steps.set_version.outputs.version }}
       - name: Push to GitHub Feed
         run: |
           for f in ./src/${PROJECT_NAME}/bin/Release/*.nupkg
