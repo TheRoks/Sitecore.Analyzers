@@ -46,8 +46,8 @@ jobs:
       run: dotnet build --configuration Release ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj
     - name: Pack with dotnet
       run: dotnet pack ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersionV2 }}
-    - name: Add GitHub Packages Source
-      run: nuget sources Add -Name "GPR" -Source ${{ secrets. GITHUB_FEED }} -UserName ${{ GITHUB_USER }} -Password ${{ secrets.GITHUB_TOKEN }}
+    - name: Add GPR Source
+      run: nuget sources Add -Name "GPR" -Source ${GITHUB_FEED} -UserName ${GITHUB_USER} -Password ${GITHUB_TOKEN}
     - name: Push to GitHub Packages
       run: nuget push nuget-packages/*.nupkg -Source "GPR"
     - name: Push to NuGet
