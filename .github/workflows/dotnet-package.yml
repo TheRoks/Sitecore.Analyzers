@@ -15,7 +15,6 @@ env:
   # GitHub Packages Feed settings
   GITHUB_FEED: https://nuget.pkg.github.com/theroks/
   GITHUB_USER: theroks
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Official NuGet Feed settings
   NUGET_FEED: https://api.nuget.org/v3/index.json
   NUGET_KEY: ${{ secrets.NUGET_KEY }}
@@ -47,7 +46,7 @@ jobs:
     - name: Pack with dotnet
       run: dotnet pack ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersionV2 }}
     - name: Add GPR Source
-      run: nuget sources Add -Name "GPR" -Source ${GITHUB_FEED} -UserName ${GITHUB_USER} -Password ${GITHUB_TOKEN}
+      run: nuget sources Add -Name "GPR" -Source ${GITHUB_FEED} -UserName ${GITHUB_USER} -Password ${{ secrets.GITHUB_TOKEN }}
     - name: Push to GitHub Packages
       run: nuget push nuget-packages/*.nupkg -Source "GPR"
     - name: Push to NuGet
