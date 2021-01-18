@@ -1,0 +1,57 @@
+name: Sitecore Analyzers Nuget Packages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [opened, synchronize]
+    branches: [ main, 'releases/**' ]
+
+env:
+  # Stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # GitHub Packages Feed settings
+  GITHUB_FEED: https://nuget.pkg.github.com/theroks/
+  GITHUB_USER: theroks
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Official NuGet Feed settings
+  NUGET_FEED: https://api.nuget.org/v3/index.json
+  NUGET_KEY: ${{ secrets.NUGET_KEY }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.4
+      with:
+        versionSpec: '5.3.x'
+    - name: Use GitVersion
+      id: gitversion # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v0.9.4
+      with:
+        additionalArguments: '/updateAssemblyInfo'
+    - run: |
+        echo "NuGetVersionV2: ${{ steps.gitversion.outputs.NuGetVersionV2 }}"
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Build with dotnet
+      run: dotnet build --configuration Release ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj
+    - name: Pack with dotnet
+      run: dotnet pack ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersionV2 }}
+    - name: Push to GitHub Feed
+      run: |
+          for f in nuget-packages/*.nupkg
+          do
+            curl -vX PUT -u "${GITHUB_USER}:${GITHUB_TOKEN}" -F package=@$f ${GITHUB_FEED}
+          done
+    - name: Push with dotnet
+      if: github.ref == 'refs/heads/main'
+      run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
