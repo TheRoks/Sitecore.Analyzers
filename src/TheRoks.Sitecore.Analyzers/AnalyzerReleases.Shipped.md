@@ -2,8 +2,8 @@
 
 ### New Rules
 
-Rule ID | Category | Severity | Notes
---------|----------|----------|--------------------
+Rule ID  | Category | Severity | Notes
+---------|----------|----------|--------------------
 SCQC0101 | Design | Warning | Avoid calling GetDatabase("master")
 SCQC1001 | Performance | Warning | Using Axes.GetDescendants() can cause serious performance issues.
 SCQC1002 | Performance | Warning | Using SelectItems(string) can cause serious performance issues.
