@@ -20,6 +20,10 @@ env:
   NUGET_FEED: https://api.nuget.org/v3/index.json
   NUGET_KEY: ${{ secrets.NUGET_KEY }}
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     runs-on: windows-latest
@@ -48,7 +52,7 @@ jobs:
       run: dotnet pack ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersionV2 }}
     - name: Push to GitHub Packages
       run: |
-          for (f in ./nuget-packages/*.nupkg)
+          for f in ./nuget-packages/*.nupkg
           do
             curl -vX PUT -u "${GITHUB_USER}:${GITHUB_TOKEN}" -F package=@$f ${GITHUB_FEED}
           done
