@@ -20,11 +20,17 @@ env:
   NUGET_FEED: https://api.nuget.org/v3/index.json
   NUGET_KEY: ${{ secrets.NUGET_KEY }}
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Fetch all history for all tags and branches
+      run: git fetch --prune --unshallow
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.8
       with:
@@ -44,12 +50,12 @@ jobs:
       run: dotnet build --configuration Release ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj
     - name: Pack with dotnet
       run: dotnet pack ./src/TheRoks.Sitecore.Analyzers.Package/TheRoks.Sitecore.Analyzers.Package.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersionV2 }}
-    - name: Push to GitHub Feed
+    - name: Push to GitHub Packages
       run: |
-          for f in nuget-packages/*.nupkg
+          for f in ./nuget-packages/*.nupkg
           do
             curl -vX PUT -u "${GITHUB_USER}:${GITHUB_TOKEN}" -F package=@$f ${GITHUB_FEED}
           done
-    - name: Push with dotnet
+    - name: Push to NuGet
       if: github.ref == 'refs/heads/main'
       run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
