@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace TheRoks.Sitecore.Analyzers.Performance.SelectItems
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class SelectItemsAnalyzer : DiagnosticAnalyzer
+	public class LogExceptionsAnalyzer : DiagnosticAnalyzer
 	{
 		private static readonly LocalizableString Title =
 			new LocalizableResourceString(nameof(Resources.Title), Resources.ResourceManager, typeof(Resources));

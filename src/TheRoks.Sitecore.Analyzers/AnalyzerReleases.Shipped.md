@@ -7,6 +7,9 @@ Rule ID  | Category | Severity | Notes
 SCQC0101 | Design | Warning | Avoid calling GetDatabase("master")
 SCQC1001 | Performance | Warning | Using Axes.GetDescendants() can cause serious performance issues.
 SCQC1002 | Performance | Warning | Using SelectItems(string) can cause serious performance issues.
+SCQC3001 | Usage | Warning | Add Exception Type on Catch Block.
+SCQC3002 | Usage | Warning | Log Error on Exception Handling
+SCQC3003 | Usage | Warning |Include exception as parameter on log error
 
 ## Release 0.1.4
 

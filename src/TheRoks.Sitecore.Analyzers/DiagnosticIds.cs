@@ -50,6 +50,9 @@
 		AvoidStaticClassValidatorManager = 0046,
 		AvoidUsingGetDatabase = 0101,
 		AxesGetDescendants = 1001,
-		SelectItems = 1002
+		SelectItems = 1002,
+		NoCatchBlock = 3001,
+		NoLogError = 3002,
+		NoLogExceptionsOnError = 3003
 	}
 }
