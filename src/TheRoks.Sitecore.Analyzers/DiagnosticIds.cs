@@ -51,6 +51,9 @@
 		AvoidUsingGetDatabase = 0101,
 		AxesGetDescendants = 1001,
 		SelectItems = 1002,
+		HelixFoundationFeatureLayer = 2001,
+		HelixFoundationProjectLayer = 2002,
+		HelixFeatureProjectLayer = 2003,
 		NoCatchBlock = 3001,
 		NoLogError = 3002,
 		NoLogExceptionsOnError = 3003
