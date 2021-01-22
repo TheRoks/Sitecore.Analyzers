@@ -60,12 +60,12 @@ namespace TheRoks.Sitecore.Analyzers.Design.LogExceptions
 																					 isEnabledByDefault: true,
 																					 description: NoExceptionOnErrorLogDescription);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics 
-		{ 
-			get 
-			{ 
-				return ImmutableArray.Create(NoCatchBlockRule, NoRuleExceptionOnError, NoRuleError); 
-			} 
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+		{
+			get
+			{
+				return ImmutableArray.Create(NoCatchBlockRule, NoRuleExceptionOnError, NoRuleError);
+			}
 		}
 
 		public override void Initialize(AnalysisContext context)
@@ -110,31 +110,44 @@ namespace TheRoks.Sitecore.Analyzers.Design.LogExceptions
 						var noLog = Diagnostic.Create(NoRuleExceptionOnError, logMethod.Item1.GetLocation());
 						context.ReportDiagnostic(noLog);
 					}
-				}			
+				}
 			}
 		}
 
-		public static IEnumerable<(SyntaxNode,T)> GetAllSymbols<T>(CSharpCompilation compilation, SyntaxNode root) where T : ISymbol
+		public static IEnumerable<(SyntaxNode, T)> GetAllSymbols<T>(CSharpCompilation compilation, SyntaxNode root) where T : ISymbol
 		{
-			var noDuplicates = new HashSet<ISymbol>();
-
-			var model = compilation.GetSemanticModel(root.SyntaxTree);
-
-			foreach (var node in root.DescendantNodesAndSelf())
+			if (compilation != null && root != null)
 			{
-				switch (node.Kind())
+				var noDuplicates = new HashSet<ISymbol>();
+				var model = compilation.GetSemanticModel(root.SyntaxTree);
+
+				if (model != null)
 				{
-					case SyntaxKind.ExpressionStatement:
-					case SyntaxKind.InvocationExpression:
-						break;
-					default:
-						var symbol = model.GetSymbolInfo(node).Symbol;
-						if (symbol != null && symbol is T)
+					foreach (var node in root.DescendantNodesAndSelf())
+					{
+						if (node == null)
 						{
-							if (noDuplicates.Add(symbol))
-								yield return (node, (T)symbol);
+							continue;
 						}
-						break;
+
+						switch (node.Kind())
+						{
+							case SyntaxKind.ExpressionStatement:
+							case SyntaxKind.InvocationExpression:
+								break;
+							default:
+								var symbol = model.GetSymbolInfo(node).Symbol;
+								if (symbol != null && symbol is T)
+								{
+									if (noDuplicates.Add(symbol))
+									{
+										yield return (node, (T)symbol);
+									}
+								}
+
+								break;
+						}
+					}
 				}
 			}
 		}

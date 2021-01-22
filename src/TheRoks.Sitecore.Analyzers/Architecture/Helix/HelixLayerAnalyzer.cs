@@ -49,58 +49,68 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 
 		public static IEnumerable<(SyntaxNode, T)> GetAllSymbols<T>(CSharpCompilation compilation, SyntaxNode root) where T : ISymbol
 		{
-			var noDuplicates = new HashSet<Location>();
-
-			var model = compilation.GetSemanticModel(root.SyntaxTree);
-
-			foreach (var node in root.DescendantNodesAndSelf())
+			if (compilation != null && root != null && root.SyntaxTree != null)
 			{
-				switch (node.Kind())
+				var noDuplicates = new HashSet<Location>();
+				var model = compilation.GetSemanticModel(root.SyntaxTree);
+
+				if (model != null)
 				{
-					case SyntaxKind.ObjectCreationExpression:
-						var objectCreationDeclartionSyntax = node as ObjectCreationExpressionSyntax;
-						if (noDuplicates.Add(objectCreationDeclartionSyntax.GetLocation()))
+					foreach (var node in root.DescendantNodesAndSelf())
+					{
+						if (node == null)
 						{
-							var objectSymbol = model.GetSymbolInfo(node).Symbol;
-							if (objectSymbol != null && objectSymbol is T)
-							{
-								if (noDuplicates.Add(node.GetLocation()))
+							continue;
+						}
+
+						switch (node.Kind())
+						{
+							case SyntaxKind.ObjectCreationExpression:
+								var objectCreationDeclartionSyntax = node as ObjectCreationExpressionSyntax;
+								if (noDuplicates.Add(objectCreationDeclartionSyntax.GetLocation()))
 								{
-									yield return (objectCreationDeclartionSyntax, (T)objectSymbol);
+									var objectSymbol = model.GetSymbolInfo(node).Symbol;
+									if (objectSymbol != null && objectSymbol is T)
+									{
+										if (noDuplicates.Add(node.GetLocation()))
+										{
+											yield return (objectCreationDeclartionSyntax, (T)objectSymbol);
+										}
+									}
 								}
-							}
+								break;
+							case SyntaxKind.MethodDeclaration:
+								var methodDeclarationSyntax = node as MethodDeclarationSyntax;
+								if (methodDeclarationSyntax.ReturnType != null && model.GetTypeInfo(methodDeclarationSyntax.ReturnType) is TypeInfo returntypeInfo)
+								{
+									if (noDuplicates.Add(methodDeclarationSyntax.ReturnType.GetLocation()))
+									{
+										yield return (methodDeclarationSyntax.ReturnType, (T)returntypeInfo.Type);
+									}
+								}
+								break;
+							case SyntaxKind.Parameter:
+								var parameterSyntax = node as ParameterSyntax;
+								if (parameterSyntax.Type != null && model.GetTypeInfo(parameterSyntax.Type) is TypeInfo parametertypeInfo)
+								{
+									if (noDuplicates.Add(parameterSyntax.Type.GetLocation()))
+									{
+										yield return (parameterSyntax.Type, (T)parametertypeInfo.Type);
+									}
+								}
+								break;
+							default:
+								var symbol = model.GetSymbolInfo(node).Symbol;
+								if (symbol != null && symbol is T t)
+								{
+									if (noDuplicates.Add(node.GetLocation()))
+									{
+										yield return (node, t);
+									}
+								}
+								break;
 						}
-						break;
-					case SyntaxKind.MethodDeclaration:
-						var methodDeclarationSyntax = node as MethodDeclarationSyntax;
-						if (model.GetTypeInfo(methodDeclarationSyntax.ReturnType) is TypeInfo returntypeInfo)
-						{
-							if (noDuplicates.Add(methodDeclarationSyntax.ReturnType.GetLocation()))
-							{
-								yield return (methodDeclarationSyntax.ReturnType, (T)returntypeInfo.Type);
-							}
-						}
-						break;
-					case SyntaxKind.Parameter:
-						var parameterSyntax = node as ParameterSyntax;
-						if (model.GetTypeInfo(parameterSyntax.Type) is TypeInfo parametertypeInfo)
-						{
-							if (noDuplicates.Add(parameterSyntax.Type.GetLocation()))
-							{
-								yield return (parameterSyntax.Type, (T)parametertypeInfo.Type);
-							}
-						}
-						break;
-					default:
-						var symbol = model.GetSymbolInfo(node).Symbol;
-						if (symbol != null && symbol is T t)
-						{
-							if (noDuplicates.Add(node.GetLocation()))
-							{
-								yield return (node, t);
-							}
-						}
-						break;
+					}
 				}
 			}
 		}
@@ -120,25 +130,6 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 			}
 		}
 
-
-		private void ExpressionStatement(SyntaxNodeAnalysisContext context)
-		{
-			if (!(context.Node is ExpressionStatementSyntax expressionStatement))
-			{
-				return;
-			}
-
-			if ((context.SemanticModel.GetTypeInfo(expressionStatement.Expression) is TypeInfo returntypeInfo))
-			{
-				if (returntypeInfo.Type == null)
-				{
-					return;
-				}
-
-				ValidateLayerUsage(context, expressionStatement.Expression, returntypeInfo.Type.ToString());
-			}
-		}
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
 		{
 			get { return ImmutableArray.Create(Rule); }
@@ -146,55 +137,6 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 
 		private readonly string BaseNamespace;
 		private readonly string ParentNamespace;
-
-		protected void MethodDeclarationAction(SyntaxNodeAnalysisContext context)
-		{
-			if (!(context.Node is MethodDeclarationSyntax methodDeclarationSyntax))
-			{
-				return;
-			}
-
-			if ((context.SemanticModel.GetTypeInfo(methodDeclarationSyntax.ReturnType) is TypeInfo returntypeInfo))
-			{
-				if (returntypeInfo.Type == null)
-				{
-					return;
-				}
-
-				ValidateLayerUsage(context, methodDeclarationSyntax.ReturnType, returntypeInfo.Type.ToString());
-			}
-
-			foreach (var parameter in methodDeclarationSyntax.ParameterList.Parameters)
-			{
-				if (!(context.SemanticModel.GetTypeInfo(parameter.Type) is TypeInfo typeInfo))
-				{
-					return;
-				}
-
-				if (typeInfo.Type == null)
-				{
-					return;
-				}
-
-				ValidateLayerUsage(context, parameter, typeInfo.Type.ToString());
-			}
-		}
-
-		protected void ObjectCreationExpressionAction(SyntaxNodeAnalysisContext context)
-		{
-			if (!(context.Node is ObjectCreationExpressionSyntax objectCreationExpressionSyntax))
-			{
-				return;
-			}
-
-			if (!(context.SemanticModel.GetSymbolInfo(objectCreationExpressionSyntax).Symbol is IMethodSymbol memberSymbol))
-			{
-				return;
-			}
-
-
-			ValidateLayerUsage(context, objectCreationExpressionSyntax, memberSymbol.ToString());
-		}
 
 		protected void UsingDirectiveAction(SyntaxNodeAnalysisContext context)
 		{
@@ -209,7 +151,17 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 
 		private static string CurrentNamespace(SyntaxNodeAnalysisContext context)
 		{
-			var childNode = context.SemanticModel.SyntaxTree.GetRoot().ChildNodes().FirstOrDefault(x => x is NamespaceDeclarationSyntax) as NamespaceDeclarationSyntax;
+			var root = context.SemanticModel.SyntaxTree.GetRoot();
+			if (root == null)
+			{
+				return string.Empty;
+			}
+			var childNode = root.ChildNodes().FirstOrDefault(x => x is NamespaceDeclarationSyntax) as NamespaceDeclarationSyntax;
+			if (childNode == null)
+			{
+				return string.Empty;
+			}
+
 			var currentClassNamespace = childNode.Name.ToString();
 			var currentHelixLayer = GetHelixLayer(currentClassNamespace);
 			return currentHelixLayer;
@@ -218,10 +170,10 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 		protected void ValidateLayerUsage(SyntaxNodeAnalysisContext context, CSharpSyntaxNode expressionSyntax, string referenceNamespace)
 		{
 			var currentHelixLayer = CurrentNamespace(context);
-			if (currentHelixLayer.Equals(BaseNamespace, System.StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(currentHelixLayer, BaseNamespace, System.StringComparison.OrdinalIgnoreCase))
 			{
 				var referencedHelixLayer = GetHelixLayer(referenceNamespace);
-				if (referencedHelixLayer.Equals(ParentNamespace, System.StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(referencedHelixLayer, ParentNamespace, System.StringComparison.OrdinalIgnoreCase))
 				{
 					ReportDiagnostic(context, expressionSyntax, ParentNamespace);
 				}
@@ -241,7 +193,7 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 			if (!string.IsNullOrEmpty(name))
 			{
 				var namespaceParts = name.Split('.');
-				if (namespaceParts.Length >= 2)
+				if (namespaceParts != null && namespaceParts.Length >= 2)
 				{
 					layer = LayerCheck(namespaceParts[1]);
 					if (string.IsNullOrEmpty(layer))
@@ -249,7 +201,8 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 						layer = LayerCheck(namespaceParts[0]);
 					}
 				}
-				else if (string.IsNullOrEmpty(layer))
+				
+				if (string.IsNullOrEmpty(layer))
 				{
 					layer = LayerCheck(name);
 				}
@@ -285,11 +238,11 @@ namespace TheRoks.Sitecore.Analyzers.Architecture.Helix
 		public string GetHelixModule(string name)
 		{
 			var matches = Compile().Matches(name);
-			if (matches.Count > 0)
+			if (matches != null && matches.Count > 0)
 			{
 				return matches[0].Groups[2].Value;
 			}
-			return null;
+			return string.Empty;
 		}
 
 		private Regex Compile()
