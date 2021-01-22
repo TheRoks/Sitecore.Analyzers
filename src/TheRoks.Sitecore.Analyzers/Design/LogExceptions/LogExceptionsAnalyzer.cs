@@ -91,7 +91,10 @@ namespace TheRoks.Sitecore.Analyzers.Design.LogExceptions
 
 			var allSymbols = GetAllSymbols<IMethodSymbol>(context.Compilation as CSharpCompilation, catchClause);
 			var logMethods = allSymbols.Where(x => x.Item2.OriginalDefinition.ToString().Contains("Sitecore.Diagnostics.Log.Error")
-										|| x.Item2.OriginalDefinition.ToString().Contains("Sitecore.Abstractions.BaseLog.Error"));
+										|| x.Item2.OriginalDefinition.ToString().Contains("Sitecore.Abstractions.BaseLog.Error")
+										|| x.Item2.OriginalDefinition.ToString().Contains("Sitecore.JavaScriptServices.ViewEngine.NodeServices.ILogger.Error")
+										|| x.Item2.OriginalDefinition.ToString().Contains("Sitecore.Services.GraphQL.Abstractions.ILogger.Error")
+										|| x.Item2.OriginalDefinition.ToString().Contains("Sitecore.ExperienceForms.Diagnostics.ILogger.LogError"));
 
 			if (!logMethods.Any())
 			{
