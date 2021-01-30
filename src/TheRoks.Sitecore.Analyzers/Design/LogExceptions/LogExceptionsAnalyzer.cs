@@ -23,7 +23,7 @@ namespace TheRoks.Sitecore.Analyzers.Design.LogExceptions
 		private static readonly DiagnosticDescriptor NoCatchBlockRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NoCatchBlock),
 																			 NoCatchBlockTitle,
 																			 NoCatchBlockMessageFormat,
-																			 nameof(Categories.Performance),
+																			 nameof(Categories.Design),
 																			 DiagnosticSeverity.Warning,
 																			 isEnabledByDefault: true,
 																			 description: NoCatchBlockDescription);
