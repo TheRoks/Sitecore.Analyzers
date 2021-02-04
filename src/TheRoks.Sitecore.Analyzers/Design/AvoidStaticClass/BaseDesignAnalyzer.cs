@@ -56,7 +56,7 @@ namespace TheRoks.Sitecore.Analyzers.Design.AvoidStaticClass
 					memberAccessExpr = ies.Expression as MemberAccessExpressionSyntax;
 					break;
 				case MemberAccessExpressionSyntax maes:
-					if (maes.Parent is MemberAccessExpressionSyntax)
+					if (maes.Parent is MemberAccessExpressionSyntax || maes.Parent is InvocationExpressionSyntax)
 					{
 						memberAccessExpr = null;
 					}

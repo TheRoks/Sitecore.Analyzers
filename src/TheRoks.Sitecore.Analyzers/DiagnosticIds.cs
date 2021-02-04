@@ -48,7 +48,6 @@
 		AvoidStaticClassTranslate = 0044,
 		AvoidStaticClassUserManager = 0045,
 		AvoidStaticClassValidatorManager = 0046,
-		AvoidStaticClassSettingsMedia = 0047,
 		AvoidUsingGetDatabase = 0101,
 		AxesGetDescendants = 1001,
 		SelectItems = 1002,

@@ -51,8 +51,7 @@ namespace TheRoks.Sitecore.Analyzers.Design.AvoidStaticClass
 			{ DiagnosticIds.AvoidStaticClassTicketManager, (StaticClass: "Sitecore.Web.Authentication.TicketManager", BaseClass: "BaseTicketManager") },
 			{ DiagnosticIds.AvoidStaticClassTranslate, (StaticClass: "Sitecore.Globalisation.Translate", BaseClass: "BaseTranslate") },
 			{ DiagnosticIds.AvoidStaticClassUserManager, (StaticClass: "Sitecore.Security.Accounts.UserManager", BaseClass: "BaseUserManager") },
-			{ DiagnosticIds.AvoidStaticClassValidatorManager, (StaticClass: "Sitecore.Data.Validators.ValidatorManager", BaseClass: "BaseValidatorManager") },
-			{ DiagnosticIds.AvoidStaticClassSettingsMedia, (StaticClass: "Sitecore.Configuration.Settings.Media", BaseClass: "MediaSettings") }
+			{ DiagnosticIds.AvoidStaticClassValidatorManager, (StaticClass: "Sitecore.Data.Validators.ValidatorManager", BaseClass: "BaseValidatorManager") }
 		};
 	}
 }
