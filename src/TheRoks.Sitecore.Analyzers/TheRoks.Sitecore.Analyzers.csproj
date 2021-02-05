@@ -21,10 +21,15 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Design\AvoidStaticClass\Resources.Designer.cs">
+    <Compile Update="Design\AvoidStaticClass\Resources - Copy.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Design\AvoidStaticClass\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Update="Design\AvoidUsingGetDatabaseTitle\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>

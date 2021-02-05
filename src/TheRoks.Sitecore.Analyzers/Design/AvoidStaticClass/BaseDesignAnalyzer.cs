@@ -38,6 +38,7 @@ namespace TheRoks.Sitecore.Analyzers.Design.AvoidStaticClass
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
+			context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.SimpleMemberAccessExpression);
 		}
 
 		private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
@@ -47,19 +48,34 @@ namespace TheRoks.Sitecore.Analyzers.Design.AvoidStaticClass
 
 		protected static void Analyze(SyntaxNodeAnalysisContext context, DiagnosticDescriptor rule)
 		{
-			var invocationExpr = context.Node as InvocationExpressionSyntax;
-			if (invocationExpr == null)
+			MemberAccessExpressionSyntax memberAccessExpr;
+
+			switch (context.Node)
 			{
-				return;
+				case InvocationExpressionSyntax ies:
+					memberAccessExpr = ies.Expression as MemberAccessExpressionSyntax;
+					break;
+				case MemberAccessExpressionSyntax maes:
+					if (maes.Parent is MemberAccessExpressionSyntax || maes.Parent is InvocationExpressionSyntax)
+					{
+						memberAccessExpr = null;
+					}
+					else
+					{
+						memberAccessExpr = maes;
+					}
+					break;
+				default:
+					memberAccessExpr = null;
+					break;
 			}
 
-			var memberAccessExpr = invocationExpr.Expression as MemberAccessExpressionSyntax;
 			if (memberAccessExpr == null)
 			{
 				return;
 			}
 
-			var memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpr).Symbol as IMethodSymbol;
+			var memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpr).Symbol;
 
 			if (memberSymbol == null)
 			{
